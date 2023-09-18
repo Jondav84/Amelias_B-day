@@ -1,0 +1,13 @@
+/** @format */
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  height: 100vh;
+  background-color: black;
+}
+.b-day_timer {
+  font-size: 45px;
+  color: orange;
+}
