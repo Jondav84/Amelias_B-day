@@ -1,12 +1,13 @@
 /** @format */
-
-// # 23 Birthday count down timer
-//
-
-// ## A
 document.addEventListener("DOMContentLoaded", function () {
   const birthMonth = 10;
   const birthDay = 31;
+
+  const currentYear = new Date().getFullYear();
+  const nextBirthdayDate = new Date(currentYear, birthMonth - 1, birthDay);
+  const nextDay = new Date(nextBirthdayDate);
+  nextDay.setDate(nextBirthdayDate.getDate() + 1);
+  nextDay.setHours(0, 0, 0, 0);
 
   const setTimer = () => {
     const currentDate = new Date();
@@ -17,28 +18,22 @@ document.addEventListener("DOMContentLoaded", function () {
       nextBirthdayDate.setFullYear(currentYear + 1);
     }
 
-    // Calculate the date for the day after the birthday
-    const nextDay = new Date(nextBirthdayDate);
-    nextDay.setDate(nextBirthdayDate.getDate() + 1);
-    nextDay.setHours(0, 0, 0, 0);
-
     let display = document.getElementsByClassName("b-day_timer");
 
     let x = setInterval(function () {
       let now = new Date();
       let timeLeft = nextBirthdayDate - now; // Calculate the time left until the birthday
 
+      if (now >= nextBirthdayDate) {
+        // If it's the day of the birthday, display "Happy Birthday" for the entire day
+        display[0].textContent = "Happy Birthday";
+        return;
+      }
+
       if (now >= nextDay) {
         // If it's the day after the birthday, reset the timer for the next year at midnight
         clearInterval(x);
         setTimeout(setTimer, nextDay - now);
-        return;
-      }
-
-      if (timeLeft <= 0) {
-        // If the birthday has arrived, display the message
-        clearInterval(x);
-        display[0].textContent = "Happy Birthday";
         return;
       }
 
@@ -56,16 +51,38 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const seconds = Math.floor(timeLeft / 1000);
 
-      if (months > 1) {
-        display[0].textContent = `Time till birthday: 
-        ${months} months ${days}days ${hours} hours ${minutes} minutes ${seconds} seconds`;
-      } else if (months == 1) {
-        display[0].textContent = `Time till birthday: ${months} month ${days}days ${hours} hours ${minutes} minutes ${seconds} seconds`;
-      } else {
-        display[0].textContent = `Time till birthday: ${days} days ${hours} hours ${minutes} minutes ${seconds} seconds`;
+      let timerText = "Time till birthday:";
+
+      if (months > 0) {
+        timerText += ` ${months} months`;
       }
+
+      if (days > 0) {
+        timerText += ` ${days} days`;
+      }
+
+      if (hours > 0 || days > 0) {
+        timerText += ` ${hours} hours`;
+      }
+
+      if (minutes > 0 || hours > 0 || days > 0) {
+        timerText += ` ${minutes} minutes`;
+      }
+
+      if (seconds > 0 || hours > 0 || days > 0 || minutes > 0) {
+        timerText += ` ${seconds} seconds`;
+      }
+
+      display[0].textContent = timerText;
     }, 1000);
   };
 
-  setTimer();
+  if (new Date() >= nextBirthdayDate && new Date() < nextDay) {
+    // If the current date is within the birthday date, display "Happy Birthday"
+    document.getElementsByClassName("b-day_timer")[0].textContent =
+      "Happy Birthday";
+  } else {
+    // Otherwise, start the timer
+    setTimer();
+  }
 });
